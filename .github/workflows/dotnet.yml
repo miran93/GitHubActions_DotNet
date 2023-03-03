@@ -1,0 +1,37 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Zip
+      run: |
+        sudo apt-get update && sudo apt-get install -y zip && \
+        zip -9 -r src.zip src vendor app config lib
+    - name: Deploy AWS Lambda
+      uses: embeddedinn/deploy_lambda@v1.0.0
+      with:
+       access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+       access-key-secret: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       region: us-east-1
+       lambda-name: DotNetApplication
+       zip-file: src.zip

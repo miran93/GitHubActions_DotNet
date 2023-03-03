@@ -26,7 +26,7 @@ jobs:
     - name: Zip
       run: |
         sudo apt-get update && sudo apt-get install -y zip && \
-        zip -9 -r WeatherForecast.zip WeatherForecast.cs vendor app config lib
+        zip -9 -r src.zip src vendor app config lib
     - name: Deploy AWS Lambda
       uses: embeddedinn/deploy_lambda@v1.0.0
       with:
@@ -34,4 +34,4 @@ jobs:
        access-key-secret: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
        region: us-east-1
        lambda-name: DotNetApplication
-       zip-file: WeatherForecast.zip
+       zip-file: src.zip
